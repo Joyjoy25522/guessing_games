@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Fun Game Hub</title>
+  <style>
+    /* Reset */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0; padding: 0;
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+      overflow: hidden;
+    }
+
+    #container {
+      position: relative;
+      width: 100%;
+      max-width: 350px;
+      height: 100%;
+      max-height: 600px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 16px;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      padding: 15px 25px 20px 25px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      user-select: none;
+    }
+
+    h1, h2 {
+      margin: 5px 0 18px 0;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: 1.1px;
+      user-select: none;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #fbc7a4, #a18cd1);
+      border: none;
+      border-radius: 12px;
+      padding: 13px 0;
+      margin: 12px 0;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #3b1a3a;
+      box-shadow: 0 5px 14px rgba(255 255 255 / 0.35);
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      width: 100%;
+      text-align: center;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn:hover, .btn:focus {
+      background: #d9a7c7;
+      box-shadow: 0 8px 20px rgba(255 255 255 / 0.5);
+      outline: none;
+    }
+    .btn:active {
+      background: #a18cd1;
+      box-shadow: 0 3px 7px rgba(255 255 255 / 0.6);
+      outline: none;
+    }
+
+    .hidden { display: none !important; }
+
+    label {
+      font-weight: 600;
+      margin-top: 14px;
+      display: block;
+      font-size: 1rem;
+      user-select: none;
+    }
+
+    input[type="text"], input[type="number"] {
+      margin-top: 7px;
+      width: 100%;
+      font-size: 1.1rem;
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: none;
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+      transition: box-shadow 0.3s ease;
+      -webkit-appearance: none;
+      -moz-appearance: textfield;
+      user-select: text;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    input[type="text"]:focus, input[type="number"]:focus {
+      outline: none;
+      box-shadow: inset 0 0 9px #ffc107;
+    }
+
+    /* Remove spin buttons on number inputs */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    .feedback {
+      margin-top: 10px;
+      font-weight: 700;
+      font-size: 1.15rem;
+      user-select: none;
+      min-height: 24px;
+      text-align: center;
+      letter-spacing: 0.04em;
+    }
+
+    .success {
+      color: #bae637;
+      text-shadow: 0 0 6px #a6d608;
+    }
+
+    .error {
+      color: #ff6b6b;
+      text-shadow: 0 0 5px #bf1e1e;
+    }
+
+    .game-title {
+      font-size: 1.5rem;
+      margin-bottom: 6px;
+      letter-spacing: 0.06em;
+      user-select: none;
+    }
+
+    /* Timer display */
+    .timer {
+      font-weight: 900;
+      font-size: 1.3rem;
+      text-align: center;
+      color: #ffde59;
+      text-shadow: 0 0 6px #9c7a05;
+      user-select: none;
+      margin-bottom: 8px;
+      letter-spacing: 0.1em;
+    }
+
+    /* Pause countdown message */
+    .pause-countdown {
+      font-weight: 700;
+      font-size: 1.2rem;
+      text-align: center;
+      margin-top: 10px;
+      color: #ffbc00;
+      text-shadow: 0 0 6px #8b6c00;
+      user-select: none;
+      letter-spacing: 0.05em;
+    }
+
+    /* Captcha Canvas */
+    #captchaCanvas {
+      display: block;
+      margin: 0 auto;
+      border-radius: 12px;
+      background: #222;
+      width: 100%;
+      max-width: 310px;
+      height: 75px;
+      touch-action: manipulation;
+      user-select: none;
+      image-rendering: optimizeSpeed;
+      image-rendering: pixelated;
+    }
+
+    /* Scroll styling */
+    #container::-webkit-scrollbar {
+      width: 6px;
+    }
+    #container::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.2);
+      border-radius: 3px;
+    }
+    #container::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    /* Hamburger Menu Icon */
+    #menuIcon {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      width: 34px;
+      height: 34px;
+      cursor: pointer;
+      z-index: 1100;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      user-select: none;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      background: transparent;
+      border-radius: 6px;
+      padding: 4px 0;
+      box-shadow: 0 0 6px rgba(0,0,0,0.25);
+      transition: background-color 0.3s ease;
+    }
+    #menuIcon:hover, #menuIcon:focus {
+      background-color: rgba(255 255 255 / 0.15);
+      outline: none;
+    }
+    #menuIcon div {
+      width: 28px;
+      height: 3px;
+      background: #fff;
+      border-radius: 2px;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    /* Menu Panel */
+    #sideMenu {
+      position: fixed;
+      top: 0;
+      left: -240px;
+      width: 220px;
+      height: 100vh;
+      background: rgba(255,255,255,0.95);
+      box-shadow: 2px 0 12px rgba(0,0,0,0.3);
+      border-top-right-radius: 16px;
+      border-bottom-right-radius: 16px;
+      padding: 30px 20px;
+      transition: left 0.3s ease;
+      z-index: 1050;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+    #sideMenu.open {
+      left: 0;
+    }
+
+    #sideMenu h3 {
+      margin: 0 0 16px 0;
+      font-weight: 700;
+      font-size: 1.4rem;
+      color: #764ba2;
+      text-align: center;
+      user-select: none;
+      letter-spacing: 0.05em;
+    }
+
+    #sideMenu button.menu-item {
+      background: linear-gradient(135deg, #a18cd1, #fbc7a4);
+      border: none;
+      border-radius: 12px;
+      padding: 12px 10px;
+      margin: 8px 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #3b1a3a;
+      box-shadow: 0 5px 14px rgba(255 255 255 / 0.8);
+      cursor: pointer;
+      text-align: left;
+      user-select: none;
+      transition: background 0.25s ease, box-shadow 0.25s ease;
+      width: 100%;
+      position: relative;
+    }
+    #sideMenu button.menu-item:hover, #sideMenu button.menu-item:focus {
+      background: #d9a7c7;
+      box-shadow: 0 8px 20px rgba(255 255 255 / 0.7);
+      outline: none;
+    }
+    #sideMenu button.menu-item:active {
+      background: #a18cd1;
+      box-shadow: 0 4px 10px rgba(255 255 255 / 0.9);
+      outline: none;
+    }
+
+    /* Earnings badge on Earning button */
+    #earningPointsBadge {
+      position: absolute;
+      top: 6px;
+      right: 12px;
+      background: #47a867;
+      color: white;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      box-shadow: 0 0 6px #3d864d;
+      user-select: none;
+      min-width: 24px;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    /* Overlay to close menu */
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.3);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 1040;
+      user-select: none;
+    }
+    #overlay.visible {
+      pointer-events: auto;
+      opacity: 1;
+    }
+
+    /* Responsive for smaller devices */
+    @media (max-width: 400px) {
+      #container {
+        padding: 12px 20px 18px 20px;
+      }
+      .btn {
+        font-size: 1.1rem;
+        padding: 12px 0;
+      }
+      #sideMenu {
+        width: 200px;
+        padding: 25px 15px;
+      }
+      #sideMenu button.menu-item {
+        font-size: 1rem;
+        padding: 10px 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="menuIcon" role="button" tabindex="0" aria-label="Open menu" aria-haspopup="true" aria-expanded="false" aria-controls="sideMenu">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+
+  <nav id="sideMenu" aria-label="Main menu" role="menu" tabindex="-1">
+    <h3>Menu</h3>
+    <button class="menu-item" role="menuitem" tabindex="0" id="menuTasks">Tasks</button>
+    <button class="menu-item" role="menuitem" tabindex="0" id="menuEarning" aria-describedby="earningPointsBadge">Earning
+      <span id="earningPointsBadge" aria-live="polite" aria-atomic="true">0</span>
+    </button>
+    <button class="menu-item" role="menuitem" tabindex="0" id="menuInvites">Invites</button>
+    <button class="menu-item" role="menuitem" tabindex="0" id="menuLogout">Logout</button>
+  </nav>
+
+  <div id="overlay" tabindex="-1" aria-hidden="true"></div>
+
+  <main id="container" role="main" aria-label="Game Hub">
+    <!-- Game Selection Menu -->
+    <section id="menu" tabindex="0">
+      <h1>Choose a Game</h1>
+      <button class="btn" id="btn-captcha" aria-haspopup="true" aria-controls="game-captcha" aria-label="Play Captcha game">Captcha</button>
+      <button class="btn" id="btn-math" aria-haspopup="true" aria-controls="game-math" aria-label="Play Math game">Math</button>
+      <button class="btn" id="btn-jumble" aria-haspopup="true" aria-controls="game-jumble" aria-label="Play Jumbled Words game">Jumbled Words</button>
+      <button class="btn" id="btn-trivia" aria-haspopup="true" aria-controls="game-trivia" aria-label="Play Trivia Quiz game">Trivia Quiz</button>
+      <button class="btn" id="btn-memory" aria-haspopup="true" aria-controls="game-memory" aria-label="Play Memory Game">Memory Game</button>
+      <button class="btn" id="btn-guessnum" aria-haspopup="true" aria-controls="game-guessnum" aria-label="Play Guess the Number game">Guess the Number</button>
+    </section>
+
+    <!-- Captcha Game -->
+    <section id="game-captcha" class="hidden" aria-label="Captcha challenge game" tabindex="0">
+      <h2 class="game-title">Captcha Challenge</h2>
+      <div class="timer" id="captchaTimer" aria-live="polite" aria-atomic="true">30</div>
+      <canvas id="captchaCanvas" width="310" height="75" aria-hidden="true"></canvas>
+      <label for="captchaInput">Enter the characters shown above:</label>
+      <input type="text" id="captchaInput" autocomplete="off" maxlength="6" inputmode="text" aria-describedby="captchaHelp" aria-label="Captcha input" />
+      <div id="captchaHelp" class="feedback" aria-live="polite"></div>
+      <div id="captchaPause" class="pause-countdown hidden" aria-live="polite" aria-atomic="true"></div>
+      <button class="btn" id="captchaSubmit">Submit</button>
+      <button class="btn" id="captchaReload" style="background:#8263a6;">Reload</button>
+      <button class="btn" id="captchaBack" style="background:#97775a;">Back to Menu</button>
+    </section>
+
+    <!-- Math Game -->
+    <section id="game-math" class="hidden" aria-label="Math quiz game" tabindex="0">
+      <h2 class="game-title">Math Quiz</h2>
+      <div class="timer" id="mathTimer" aria-live="polite" aria-atomic="true">30</div>
+      <div id="mathQuestion" style="text-align:center; font-size: 1.6rem; font-weight: 700; margin: 6px 0 15px 0;"></div>
+      <label for="mathAnswer">Your answer:</label>
+      <input type="number" id="mathAnswer" inputmode="numeric" autocomplete="off" aria-describedby="mathFeedback" aria-label="Math answer input" />
+      <div id="mathFeedback" class="feedback" aria-live="polite"></div>
+      <div id="mathPause" class="pause-countdown hidden" aria-live="polite" aria-atomic="true"></div>
+      <button class="btn" id="mathSubmit">Submit</button>
+      <button class="btn hidden" id="mathNext" style="background:#47a867;">Next Question</button>
+      <button class="btn" id="mathBack" style="background:#97775a;">Back to Menu</button>
+    </section>
+
+    <!-- Jumbled Words Game -->
+    <section id="game-jumble" class="hidden" aria-label="Jumbled words game" tabindex="0">
+      <h2 class="game-title">Jumbled Words</h2>
+      <div class="timer" id="jumbleTimer" aria-live="polite" aria-atomic="true">30</div>
+      <div id="jumbleWord" style="text-align:center; font-size: 1.9rem; font-weight: 700; letter-spacing: 3px; margin: 6px 0 15px 0;"></div>
+      <label for="jumbleGuess">Guess the word:</label>
+      <input type="text" id="jumbleGuess" autocomplete="off" maxlength="20" inputmode="text" aria-describedby="jumbleFeedback" aria-label="Jumbled words guess input" />
+      <div id="jumbleFeedback" class="feedback" aria-live="polite"></div>
+      <div id="jumblePause" class="pause-countdown hidden" aria-live="polite" aria-atomic="true"></div>
+      <button class="btn" id="jumbleSubmit">Submit</button>
+      <button class="btn" id="jumbleReload" style="background:#8263a6;">New Word</button>
+      <button class="btn" id="jumbleBack" style="background:#97775a;">Back to Menu</button>
+    </section>
+
+    <!-- Trivia Quiz Game -->
+    <section id="game-trivia" class="hidden" aria-label="Trivia quiz game" tabindex="0">
+      <h2 class="game-title">Trivia Quiz</h2>
+      <div class="timer" id="triviaTimer" aria-live="polite" aria-atomic="true">30</div>
+      <div id="triviaQuestion" style="text-align:center; font-size: 1.3rem; font-weight: 700; margin: 6px 0 10px 0;"></div>
+      <div id="triviaAnswers" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px;"></div>
+      <div id="triviaFeedback" class="feedback" aria-live="polite"></div>
+      <div id="triviaPause" class="pause-countdown hidden" aria-live="polite" aria-atomic="true"></div>
+      <button class="btn hidden" id="triviaNext" style="background:#47a867;">Next Question</button>
+      <button class="btn" id="triviaBack" style="background:#97775a;">Back to Menu</button>
+    </section>
+
+    <!-- Memory Game -->
+    <section id="game-memory" class="hidden" aria-label="Memory matching game" tabindex="0">
+      <h2 class="game-title">Memory Game</h2>
+      <div class="timer" id="memoryTimer" aria-live="polite" aria-atomic="true">60</div>
+      <div id="memoryGameGrid" style="display:grid; grid-template-columns: repeat(4, 1fr); gap: 8px; justify-items: center; margin-bottom: 10px;"></div>
+      <div id="memoryFeedback" class="feedback" aria-live="polite"></div>
+      <button class="btn" id="memoryBack" style="background:#97775a;">Back to Menu</button>
+    </section>
+
+    <!-- Guess the Number Game -->
+    <section id="game-guessnum" class="hidden" aria-label="Guess the Number game" tabindex="0">
+      <h2 class="game-title">Guess the Number</h2>
+      <div class="timer" id="guessnumTimer" aria-live="polite" aria-atomic="true">30</div>
+      <label for="guessnumInput">Guess a number between 1 and 100:</label>
+      <input type="number" id="guessnumInput" inputmode="numeric" autocomplete="off" min="1" max="100" aria-describedby="guessnumFeedback" aria-label="Guess the number input" />
+      <div id="guessnumFeedback" class="feedback" aria-live="polite"></div>
+      <div id="guessnumPause" class="pause-countdown hidden" aria-live="polite" aria-atomic="true"></div>
+      <button class="btn" id="guessnumSubmit">Submit</button>
+      <button class="btn hidden" id="guessnumPlayAgain" style="background:#47a867;">Play Again</button>
+      <button class="btn" id="guessnumBack" style="background:#97775a;">Back to Menu</button>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      // Hamburger menu toggle
+      const menuIcon = document.getElementById('menuIcon');
+      const sideMenu = document.getElementById('sideMenu');
+      const overlay = document.getElementById('overlay');
+
+      function openMenu() {
+        sideMenu.classList.add('open');
+        overlay.classList.add('visible');
+        menuIcon.setAttribute('aria-expanded', 'true');
+        sideMenu.focus();
+      }
+
+      function closeMenu() {
+        sideMenu.classList.remove('open');
+        overlay.classList.remove('visible');
+        menuIcon.setAttribute('aria-expanded', 'false');
+        menuIcon.focus();
+      }
+
+      menuIcon.addEventListener('click', () => {
+        if (sideMenu.classList.contains('open')) {
+          closeMenu();
+        } else {
+          openMenu();
+        }
+      });
+
+      menuIcon.addEventListener('keydown', (e) => {
+        if(e.key === 'Enter' || e.key === ' '){
+          e.preventDefault();
+          if (sideMenu.classList.contains('open')) {
+            closeMenu();
+          } else {
+            openMenu();
+          }
+        }
+      });
+
+      overlay.addEventListener('click', closeMenu);
+
+      // Close menu with Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && sideMenu.classList.contains('open')) {
+          closeMenu();
+        }
+      });
+
+      // Elements selectors
+      const menu = document.getElementById('menu');
+      const gameCaptcha = document.getElementById('game-captcha');
+      const gameMath = document.getElementById('game-math');
+      const gameJumble = document.getElementById('game-jumble');
+      const gameTrivia = document.getElementById('game-trivia');
+      const gameMemory = document.getElementById('game-memory');
+      const gameGuessnum = document.getElementById('game-guessnum');
+
+      const btnCaptcha = document.getElementById('btn-captcha');
+      const btnMath = document.getElementById('btn-math');
+      const btnJumble = document.getElementById('btn-jumble');
+      const btnTrivia = document.getElementById('btn-trivia');
+      const btnMemory = document.getElementById('btn-memory');
+      const btnGuessnum = document.getElementById('btn-guessnum');
+
+      const earningPointsBadge = document.getElementById('earningPointsBadge');
+
+      // Menu buttons alert placeholders
+      document.getElementById('menuTasks').addEventListener('click', () => {
+        closeMenu();
+        alert('Tasks clicked!');
+      });
+      document.getElementById('menuInvites').addEventListener('click', () => {
+        closeMenu();
+        alert('Invites clicked!');
+      });
+      document.getElementById('menuLogout').addEventListener('click', () => {
+        closeMenu();
+        alert('Logout clicked!');
+      });
+
+      // Points and game tracking
+      let points = { captcha:0, math:0, jumble:0, trivia:0, memory:0, guessnum:0 };
+      let totalPoints = 0;
+      let currentGame = null;
+
+      // Timer and pause interval references
+      let questionTimer = null;
+      let questionTimeLeft = 30;
+      let pauseTimer = null;
+      let pauseTimeLeft = 30;
+
+      // Utility functions for localStorage persistence (daily reset)
+      function savePoints() {
+        const today = new Date().toISOString().slice(0,10);
+        localStorage.setItem('gameHubPoints', JSON.stringify(points));
+        localStorage.setItem('gameHubDate', today);
+      }
+
+      function loadPoints() {
+        const today = new Date().toISOString().slice(0,10);
+        const savedDate = localStorage.getItem('gameHubDate');
+        if(savedDate === today) {
+          const savedPoints = localStorage.getItem('gameHubPoints');
+          if(savedPoints) points = JSON.parse(savedPoints);
+        } else {
+          points = { captcha:0, math:0, jumble:0, trivia:0, memory:0, guessnum:0 };
+          savePoints();
+        }
+        updateTotalPoints();
+      }
+
+      function updateTotalPoints() {
+        totalPoints = points.captcha + points.math + points.jumble + points.trivia + points.memory + points.guessnum;
+        earningPointsBadge.textContent = totalPoints;
+      }
+
+      // Timer start/stop for question timer (default 30 seconds or 60 for memory)
+      function startQuestionTimer(displayEl, duration=30) {
+        stopQuestionTimer();
+        questionTimeLeft = duration;
+        displayEl.textContent = questionTimeLeft;
+        questionTimer = setInterval(() => {
+          questionTimeLeft--;
+          displayEl.textContent = questionTimeLeft;
+          if(questionTimeLeft <= 0) {
+            stopQuestionTimer();
+            // On timeout, start pause countdown
+            startPauseCountdown();
+          }
+        }, 1000);
+      }
+      function stopQuestionTimer() {
+        if(questionTimer) {
+          clearInterval(questionTimer);
+          questionTimer = null;
+        }
+      }
+
+      // Pause countdown (30 seconds) after question ends before next question or back to menu
+      function startPauseCountdown() {
+        pauseTimeLeft = 30;
+        const pauseEl = getPauseElementForCurrentGame();
+        if(!pauseEl) {
+          // If no pause element found, fallback directly to next question or menu
+          proceedAfterPause();
+          return;
+        }
+        pauseEl.textContent = `Next action in ${pauseTimeLeft} seconds...`;
+        pauseEl.classList.remove('hidden');
+        disableInputsForCurrentGame(true);
+        pauseTimer = setInterval(() => {
+          pauseTimeLeft--;
+          pauseEl.textContent = `Next action in ${pauseTimeLeft} seconds...`;
+          if(pauseTimeLeft <= 0) {
+            stopPauseCountdown();
+            proceedAfterPause();
+          }
+        }, 1000);
+      }
+      function stopPauseCountdown() {
+        if(pauseTimer) {
+          clearInterval(pauseTimer);
+          pauseTimer = null;
+        }
+        const pauseEl = getPauseElementForCurrentGame();
+        if(pauseEl) {
+          pauseEl.classList.add('hidden');
+          pauseEl.textContent = '';
+        }
+        disableInputsForCurrentGame(false);
+      }
+
+      // Disable or enable inputs and buttons related to current game during pause
+      function disableInputsForCurrentGame(disable) {
+        switch(currentGame) {
+          case 'captcha':
+            captchaInput.disabled = disable;
+            captchaSubmit.disabled = disable;
+            captchaReload.disabled = disable;
+            break;
+          case 'math':
+            mathAnswer.disabled = disable;
+            mathSubmit.disabled = disable;
+            mathNext.disabled = disable;
+            break;
+          case 'jumble':
+            jumbleGuess.disabled = disable;
+            jumbleSubmit.disabled = disable;
+            jumbleReload.disabled = disable;
+            break;
+          case 'trivia':
+            triviaAnswers.querySelectorAll('button').forEach(b => b.disabled = disable);
+            triviaNext.disabled = disable;
+            break;
+          case 'memory':
+            memoryGameGrid.querySelectorAll('button').forEach(b => b.disabled = disable);
+            break;
+          case 'guessnum':
+            guessnumInput.disabled = disable;
+            guessnumSubmit.disabled = disable;
+            guessnumPlayAgain.disabled = disable;
+            break;
+        }
+      }
+
+      // Get pause message element for current game
+      function getPauseElementForCurrentGame() {
+        switch(currentGame) {
+          case 'captcha': return document.getElementById('captchaPause');
+          case 'math': return document.getElementById('mathPause');
+          case 'jumble': return document.getElementById('jumblePause');
+          case 'trivia': return document.getElementById('triviaPause');
+          case 'memory': return document.getElementById('memoryPause'); // memoryPause doesn't exist - no pause for memory, fallback to null
+          case 'guessnum': return document.getElementById('guessnumPause');
+          default: return null;
+        }
+      }
+
+      // What to do after pause countdown ends
+      function proceedAfterPause() {
+        switch(currentGame) {
+          case 'math':
+            if(!mathNext.classList.contains('hidden')) {
+              mathNext.click();
+            } else {
+              showSection(menu);
+            }
+            break;
+          case 'trivia':
+            if(!triviaNext.classList.contains('hidden')) {
+              triviaNext.click();
+            } else {
+              showSection(menu);
+            }
+            break;
+          case 'guessnum':
+            if(!guessnumPlayAgain.classList.contains('hidden')) {
+              guessnumPlayAgain.click();
+            } else {
+              showSection(menu);
+            }
+            break;
+          default:
+            // For captcha, jumble, memory, after pausing, return to menu
+            showSection(menu);
+            break;
+        }
+      }
+
+      // Utility for hiding and showing main sections
+      function showSection(section) {
+        [menu, gameCaptcha, gameMath, gameJumble, gameTrivia, gameMemory, gameGuessnum].forEach(s => s.classList.add('hidden'));
+        section.classList.remove('hidden');
+        clearFeedbacks();
+        if (section.tabIndex >= 0) {
+          section.focus();
+        }
+        if(sideMenu.classList.contains('open')) closeMenu();
+        // Cancel timers and pause countdown when switching
+        stopQuestionTimer();
+        stopPauseCountdown();
+        // Set currentGame token
+        if(section === gameCaptcha) currentGame = 'captcha';
+        else if(section === gameMath) currentGame = 'math';
+        else if(section === gameJumble) currentGame = 'jumble';
+        else if(section === gameTrivia) currentGame = 'trivia';
+        else if(section === gameMemory) currentGame = 'memory';
+        else if(section === gameGuessnum) currentGame = 'guessnum';
+        else currentGame = null;
+        updateTotalPoints();
+      }
+
+      function clearFeedbacks() {
+        captchaFeedback.textContent = '';
+        mathFeedback.textContent = '';
+        jumbleFeedback.textContent = '';
+        triviaFeedback.textContent = '';
+        memoryFeedback.textContent = '';
+        guessnumFeedback.textContent = '';
+      }
+
+      // --- Captcha Game Elements and Logic ---
+      const captchaCanvas = document.getElementById('captchaCanvas');
+      const captchaCtx = captchaCanvas.getContext('2d');
+      const captchaInput = document.getElementById('captchaInput');
+      const captchaSubmit = document.getElementById('captchaSubmit');
+      const captchaReload = document.getElementById('captchaReload');
+      const captchaBack = document.getElementById('captchaBack');
+      const captchaFeedback = document.getElementById('captchaHelp');
+      const captchaTimer = document.getElementById('captchaTimer');
+
+      let captchaText = '';
+
+      function generateCaptchaText(length = 6) {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        let text = '';
+        for(let i=0; i < length; i++) {
+          text += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return text;
+      }
+
+      function drawCaptcha(text) {
+        const ctx = captchaCtx;
+        ctx.clearRect(0, 0, captchaCanvas.width, captchaCanvas.height);
+        ctx.textBaseline = 'middle';
+        ctx.textAlign = 'center';
+
+        const gradient = ctx.createLinearGradient(0, 0, captchaCanvas.width, captchaCanvas.height);
+        gradient.addColorStop(0, '#331E36');
+        gradient.addColorStop(1, '#56327E');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, captchaCanvas.width, captchaCanvas.height);
+
+        for(let i = 0; i < 12; i++) {
+          ctx.strokeStyle = `rgba(255,255,255,${Math.random() * 0.3})`;
+          ctx.beginPath();
+          ctx.moveTo(Math.random() * captchaCanvas.width, Math.random() * captchaCanvas.height);
+          ctx.lineTo(Math.random() * captchaCanvas.width, Math.random() * captchaCanvas.height);
+          ctx.stroke();
+        }
+
+        const len = text.length;
+        for(let i = 0; i < len; i++) {
+          const char = text.charAt(i);
+          const x = (captchaCanvas.width / (len + 1)) * (i + 1);
+          const y = captchaCanvas.height / 2;
+          const fontSize = 38 + Math.random() * 8;
+          ctx.font = `${fontSize}px 'Arial Black', Gadget, sans-serif`;
+          ctx.fillStyle = `hsl(${Math.floor(Math.random()*360)}, 70%, 70%)`;
+          const angle = (Math.random() - 0.5) * 0.6;
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(angle);
+          ctx.fillText(char, 0, 0);
+          ctx.restore();
+        }
+
+        for(let i = 0; i < 40; i++) {
+          ctx.fillStyle = `rgba(255,255,255,${Math.random() * 0.3})`;
+          ctx.beginPath();
+          ctx.arc(Math.random() * captchaCanvas.width, Math.random() * captchaCanvas.height, Math.random()*2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      function setupCaptcha() {
+        captchaText = generateCaptchaText(6);
+        drawCaptcha(captchaText);
+        captchaInput.value = '';
+        captchaInput.disabled = false;
+        captchaSubmit.disabled = false;
+        captchaFeedback.textContent = '';
+        captchaFeedback.className = 'feedback';
+        stopPauseCountdown();
+        startQuestionTimer(captchaTimer);
+        updateTotalPoints();
+      }
+
+      captchaSubmit.addEventListener('click', () => {
+        if(pauseTimer) return; // block submission during pause
+        const userEntry = captchaInput.value.trim().toUpperCase();
+        if(userEntry === '') {
+          captchaFeedback.textContent = 'Please enter the captcha text.';
+          captchaFeedback.className = 'feedback error';
+          return;
+        }
+        if(userEntry === captchaText) {
+          captchaFeedback.textContent = 'Correct! Well done.';
+          captchaFeedback.className = 'feedback success';
+          points.captcha++;
+          savePoints();
+          updateTotalPoints();
+          stopQuestionTimer();
+          captchaInput.disabled = true;
+          captchaSubmit.disabled = true;
+          startPauseCountdown();
+        } else {
+          captchaFeedback.textContent = 'Wrong, please try again.';
+          captchaFeedback.className = 'feedback error';
+          setupCaptcha();
+        }
+      });
+
+      captchaReload.addEventListener('click', () => {
+        if(pauseTimer) return;
+        setupCaptcha();
+      });
+
+      captchaBack.addEventListener('click', () => {
+        stopQuestionTimer();
+        stopPauseCountdown();
+        showSection(menu);
+      });
+
+      // --- Math Game ---
+      const mathQuestion = document.getElementById('mathQuestion');
+      const mathAnswer = document.getElementById('mathAnswer');
+      const mathSubmit = document.getElementById('mathSubmit');
+      const mathNext = document.getElementById('mathNext');
+      const mathBack = document.getElementById('mathBack');
+      const mathFeedback = document.getElementById('mathFeedback');
+      const mathTimer = document.getElementById('mathTimer');
+
+      let currentMathAnswer = null;
+
+      function generateMathQuestion() {
+        const operations = ['+', '-', '×'];
+        const op = operations[Math.floor(Math.random() * operations.length)];
+        let a, b, answer;
+        switch(op) {
+          case '+':
+            a = Math.floor(Math.random() * 50) + 1;
+            b = Math.floor(Math.random() * 50) + 1;
+            answer = a + b;
+            break;
+          case '-':
+            a = Math.floor(Math.random() * 50) + 25;
+            b = Math.floor(Math.random() * 25) + 1;
+            answer = a - b;
+            break;
+          case '×':
+            a = Math.floor(Math.random() * 12) + 1;
+            b = Math.floor(Math.random() * 12) + 1;
+            answer = a * b;
+            break;
+        }
+        return { question: `${a} ${op} ${b} = ?`, answer };
+      }
+
+      function setupMathQuestion() {
+        const q = generateMathQuestion();
+        currentMathAnswer = q.answer;
+        mathQuestion.textContent = q.question;
+        mathAnswer.value = '';
+        mathAnswer.disabled = false;
+        mathSubmit.disabled = false;
+        mathNext.classList.add('hidden');
+        mathFeedback.textContent = '';
+        mathFeedback.className = 'feedback';
+        stopPauseCountdown();
+        startQuestionTimer(mathTimer);
+        updateTotalPoints();
+      }
+
+      mathSubmit.addEventListener('click', () => {
+        if(pauseTimer) return; // block submission during pause
+        const userAns = Number(mathAnswer.value);
+        if(mathAnswer.value.trim() === '') {
+          mathFeedback.textContent = 'Please enter your answer.';
+          mathFeedback.className = 'feedback error';
+          return;
+        }
+        if(userAns === currentMathAnswer) {
+          mathFeedback.textContent = 'Correct! Good job.';
+          mathFeedback.className = 'feedback success';
+          mathSubmit.disabled = true;
+          mathAnswer.disabled = true;
+          mathNext.classList.remove('hidden');
+          points.math++;
+          savePoints();
+          updateTotalPoints();
+          stopQuestionTimer();
+          startPauseCountdown();
+        } else {
+          mathFeedback.textContent = 'Incorrect, try again.';
+          mathFeedback.className = 'feedback error';
+        }
+      });
+
+      mathNext.addEventListener('click', () => {
+        setupMathQuestion();
+      });
+
+      mathBack.addEventListener('click', () => {
+        stopQuestionTimer();
+        stopPauseCountdown();
+        showSection(menu);
+      });
+
+      // --- Jumbled Words Game ---
+      const jumbleWord = document.getElementById('jumbleWord');
+      const jumbleGuess = document.getElementById('jumbleGuess');
+      const jumbleSubmit = document.getElementById('jumbleSubmit');
+      const jumbleReload = document.getElementById('jumbleReload');
+      const jumbleBack = document.getElementById('jumbleBack');
+      const jumbleFeedback = document.getElementById('jumbleFeedback');
+      const jumbleTimer = document.getElementById('jumbleTimer');
+
+      const words = [
+        "javascript", "programming", "developer", "computer", "function",
+        "variable", "interface", "algorithm", "software", "hardware",
+        "internet", "browser", "debugger", "stylesheet", "library",
+        "framework", "responsive", "frontend", "backend", "application"
+      ];
+
+      let currentWord = '';
+
+      function jumbleWordFunc(word) {
+        const arr = word.split('');
+        for(let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr.join('');
+      }
+
+      function setupJumbleWord() {
+        currentWord = words[Math.floor(Math.random() * words.length)];
+        let jumbled = jumbleWordFunc(currentWord);
+        while(jumbled === currentWord) {
+          jumbled = jumbleWordFunc(currentWord);
+        }
+        jumbleWord.textContent = jumbled.toUpperCase();
+        jumbleGuess.value = '';
+        jumbleGuess.disabled = false;
+        jumbleSubmit.disabled = false;
+        jumbleFeedback.textContent = '';
+        jumbleFeedback.className = 'feedback';
+        stopPauseCountdown();
+        startQuestionTimer(jumbleTimer);
+        updateTotalPoints();
+      }
+
+      jumbleSubmit.addEventListener('click', () => {
+        if(pauseTimer) return; // block submission during pause
+        const guess = jumbleGuess.value.trim().toLowerCase();
+        if(guess === '') {
+          jumbleFeedback.textContent = 'Please enter your guess.';
+          jumbleFeedback.className = 'feedback error';
+          return;
+        }
+        if(guess === currentWord) {
+          jumbleFeedback.textContent = 'Correct! Well done.';
+          jumbleFeedback.className = 'feedback success';
+          points.jumble++;
+          savePoints();
+          updateTotalPoints();
+          stopQuestionTimer();
+          jumbleGuess.disabled = true;
+          jumbleSubmit.disabled = true;
+          startPauseCountdown();
+        } else {
+          jumbleFeedback.textContent = 'Wrong guess, try again.';
+          jumbleFeedback.className = 'feedback error';
+        }
+      });
+
+      jumbleReload.addEventListener('click', () => {
+        if(pauseTimer) return;
+        setupJumbleWord();
+      });
+
+      jumbleBack.addEventListener('click', () => {
+        stopQuestionTimer();
+        stopPauseCountdown();
+        showSection(menu);
+      });
+
+      // --- Trivia Quiz Game ---
+      const triviaQuestion = document.getElementById('triviaQuestion');
+      const triviaAnswers = document.getElementById('triviaAnswers');
+      const triviaFeedback = document.getElementById('triviaFeedback');
+      const triviaNext = document.getElementById('triviaNext');
+      const triviaBack = document.getElementById('triviaBack');
+      const triviaTimer = document.getElementById('triviaTimer');
+
+      const triviaQuestions = [
+        {
+          question: "What is the capital of France?",
+          answers: ["Berlin", "London", "Paris", "Rome"],
+          correct: 2
+        },
+        {
+          question: "Which planet is known as the Red Planet?",
+          answers: ["Earth", "Mars", "Jupiter", "Saturn"],
+          correct: 1
+        },
+        {
+          question: "Who wrote 'Hamlet'?",
+          answers: ["Charles Dickens", "William Shakespeare", "Mark Twain", "J.K. Rowling"],
+          correct: 1
+        },
+        {
+          question: "What is the smallest prime number?",
+          answers: ["0", "1", "2", "3"],
+          correct: 2
+        },
+        {
+          question: "What is the chemical symbol for water?",
+          answers: ["O2", "CO2", "H2O", "NaCl"],
+          correct: 2
+        }
+      ];
+
+      let triviaCurrentIndex = 0;
+      let triviaAnswered = false;
+
+      function renderTriviaQuestion() {
+        triviaFeedback.textContent = '';
+        triviaAnswered = false;
+        triviaNext.classList.add('hidden');
+
+        const q = triviaQuestions[triviaCurrentIndex];
+        triviaQuestion.textContent = q.question;
+
+        // Clear previous answers
+        triviaAnswers.innerHTML = '';
+        q.answers.forEach((ans, idx) => {
+          const btn = document.createElement('button');
+          btn.textContent = ans;
+          btn.className = 'btn';
+          btn.type = 'button';
+          btn.disabled = false;
+          btn.addEventListener('click', () => {
+            if(triviaAnswered) return;
+            triviaAnswered = true;
+            if(idx === q.correct) {
+              btn.classList.add('success');
+              triviaFeedback.textContent = 'Correct! Well done.';
+              triviaFeedback.className = 'feedback success';
+              points.trivia++;
+              savePoints();
+              updateTotalPoints();
+            } else {
+              btn.classList.add('error');
+              triviaFeedback.textContent = 'Wrong answer. Try the next question.';
+              triviaFeedback.className = 'feedback error';
+              // Highlight correct answer
+              Array.from(triviaAnswers.children).forEach((b,i) => {
+                if(i === q.correct) b.classList.add('success');
+                b.disabled = true;
+              });
+              return;
+            }
+            // Disable all buttons
+            triviaAnswers.querySelectorAll('button').forEach(b => b.disabled = true);
+            triviaNext.classList.remove('hidden');
+            stopQuestionTimer();
+            startPauseCountdown();
+          });
+          triviaAnswers.appendChild(btn);
+        });
+
+        stopPauseCountdown();
+        startQuestionTimer(triviaTimer);
+      }
+
+      triviaNext.addEventListener('click', () => {
+        triviaCurrentIndex++;
+        if(triviaCurrentIndex >= triviaQuestions.length) {
+          triviaCurrentIndex = 0; // Loop back to start
+        }
+        renderTriviaQuestion();
+      });
+
+      triviaBack.addEventListener('click', () => {
+        stopQuestionTimer();
+        stopPauseCountdown();
+        showSection(menu);
+      });
+
+      // --- Memory Game ---
+      const memoryGameGrid = document.getElementById('memoryGameGrid');
+      const memoryFeedback = document.getElementById('memoryFeedback');
+      const memoryBack = document.getElementById('memoryBack');
+      const memoryTimer = document.getElementById('memoryTimer');
+
+      const memoryIcons = ['🍎','🍌','🍇','🍓','🍒','🍍','🥝','🥥'];
+      let memoryTiles = [];
+      let memoryFirst = null;
+      let memorySecond = null;
+      let memoryLock = false;
+      let memoryMatchedPairs = 0;
+
+      function shuffleArray(array) {
+        for(let i = array.length -1; i > 0; i--) {
+          let j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+      }
+
+      function setupMemoryGame() {
+        memoryTiles = memoryIcons.concat(memoryIcons); // pairs
+        shuffleArray(memoryTiles);
+        memoryGameGrid.innerHTML = '';
+        memoryFirst = null;
+        memorySecond = null;
+        memoryLock = false;
+        memoryMatchedPairs = 0;
+        memoryFeedback.textContent = '';
+
+        for(let i = 0; i < memoryTiles.length; i++) {
+          const btn = document.createElement('button');
+          btn.textContent = '?';
+          btn.className = 'btn';
+          btn.style.fontSize = '2rem';
+          btn.style.userSelect = 'none';
+          btn.setAttribute('aria-label', 'Memory tile');
+          btn.type='button';
+
+          btn.addEventListener('click', () => {
+            if(memoryLock || btn.textContent !== '?') return;
+            btn.textContent = memoryTiles[i];
+            btn.disabled = true;
+
+            if(!memoryFirst) {
+              memoryFirst = btn;
+            } else if(!memorySecond && btn !== memoryFirst) {
+              memorySecond = btn;
+              memoryLock = true;
+
+              setTimeout(() => {
+                if(memoryFirst.textContent === memorySecond.textContent) {
+                  memoryMatchedPairs++;
+                  if(memoryMatchedPairs === memoryIcons.length) {
+                    memoryFeedback.textContent = 'Congratulations! You matched all pairs.';
+                    memoryFeedback.className = 'feedback success';
+                    points.memory++;
+                    savePoints();
+                    updateTotalPoints();
+                    stopQuestionTimer();
+                    startPauseCountdown();
+                  }
+                } else {
+                  memoryFirst.textContent = '?';
+                  memorySecond.textContent = '?';
+                  memoryFirst.disabled = false;
+                  memorySecond.disabled = false;
+                }
+                memoryFirst = null;
+                memorySecond = null;
+                memoryLock = false;
+              }, 900);
+            }
+          });
+
+          memoryGameGrid.appendChild(btn);
+        }
+        stopPauseCountdown();
+        startQuestionTimer(memoryTimer, 60);
+      }
+
+      memoryBack.addEventListener('click', () => {
+        stopQuestionTimer();
+        stopPauseCountdown();
+        showSection(menu);
+      });
+
+      // --- Guess the Number Game ---
+      const guessnumInput = document.getElementById('guessnumInput');
+      const guessnumSubmit = document.getElementById('guessnumSubmit');
+      const guessnumPlayAgain = document.getElementById('guessnumPlayAgain');
+      const guessnumBack = document.getElementById('guessnumBack');
+      const guessnumFeedback = document.getElementById('guessnumFeedback');
+      const guessnumTimer = document.getElementById('guessnumTimer');
+      let guessnumTarget = 0;
+      let guessnumTries = 0;
+
+      function setupGuessnum() {
+        guessnumTarget = Math.floor(Math.random() * 100) + 1;
+        guessnumTries = 0;
+        guessnumInput.value = '';
+        guessnumInput.disabled = false;
+        guessnumSubmit.disabled = false;
+        guessnumPlayAgain.classList.add('hidden');
+        guessnumFeedback.textContent = '';
+        stopPauseCountdown();
+        startQuestionTimer(guessnumTimer);
+        updateTotalPoints();
+      }
+
+      guessnumSubmit.addEventListener('click', () => {
+        if(pauseTimer) return;
+        const guessVal = Number(guessnumInput.value);
+        if(guessnumInput.value.trim() === '' || isNaN(guessVal) || guessVal < 1 || guessVal > 100) {
+          guessnumFeedback.textContent = 'Please enter a number between 1 and 100.';
+          guessnumFeedback.className = 'feedback error';
+          return;
+        }
+        guessnumTries++;
+        if(guessVal === guessnumTarget) {
+          guessnumFeedback.textContent = `Correct! You guessed it in ${guessnumTries} tries.`;
+          guessnumFeedback.className = 'feedback success';
+          points.guessnum++;
+          savePoints();
+          updateTotalPoints();
+          guessnumInput.disabled = true;
+          guessnumSubmit.disabled = true;
+          guessnumPlayAgain.classList.remove('hidden');
+          stopQuestionTimer();
+          startPauseCountdown();
+        } else if(guessVal < guessnumTarget) {
+          guessnumFeedback.textContent = 'Too low! Try a higher number.';
+          guessnumFeedback.className = 'feedback error';
+        } else {
+          guessnumFeedback.textContent = 'Too high! Try a lower number.';
+          guessnumFeedback.className = 'feedback error';
+        }
+      });
+
+      guessnumPlayAgain.addEventListener('click', () => {
+        setupGuessnum();
+      });
+
+      guessnumBack.addEventListener('click', () => {
+        stopQuestionTimer();
+        stopPauseCountdown();
+        showSection(menu);
+      });
+
+      // Menu Earning button alert with points and withdrawal info
+      document.getElementById('menuEarning').addEventListener('click', () => {
+        closeMenu();
+        // Calculate pesos from points (50 points = 1 peso)
+        const pesos = Math.floor(totalPoints / 50);
+        let message = `Your total points: ${totalPoints}\n` +
+          `Equivalent pesos balance: ₱${pesos}\n\n` +
+          "Withdrawal Info:\n" +
+          "- Minimum withdrawal: ₱350\n" +
+          "- Maximum withdrawal: ₱10,000\n\n" +
+          "Please note that withdrawals within this range can be made. Earn more points to increase your balance!";
+        alert(message);
+      });
+
+      // Start game button handlers
+      btnCaptcha.addEventListener('click', () => {
+        showSection(gameCaptcha);
+        setupCaptcha();
+      });
+      btnMath.addEventListener('click', () => {
+        showSection(gameMath);
+        setupMathQuestion();
+      });
+      btnJumble.addEventListener('click', () => {
+        showSection(gameJumble);
+        setupJumbleWord();
+      });
+      btnTrivia.addEventListener('click', () => {
+        showSection(gameTrivia);
+        triviaCurrentIndex = 0;
+        renderTriviaQuestion();
+      });
+      btnMemory.addEventListener('click', () => {
+        showSection(gameMemory);
+        setupMemoryGame();
+      });
+      btnGuessnum.addEventListener('click', () => {
+        showSection(gameGuessnum);
+        setupGuessnum();
+      });
+
+      // Load saved points on startup
+      loadPoints();
+
+      // Initialize main menu on load
+      showSection(menu);
+
+    })();
+  </script>
+</body>
+</html>
+
